@@ -6,32 +6,30 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-
-import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private SuccessUserHandler successUserHandler;
+    private final SuccessUserHandler successUserHandler;
+    private final AuthProvider authProvider;
 
-    private DataSource dataSource;
 
-    public WebSecurityConfig(SuccessUserHandler successUserHandler, DataSource dataSource) {
+    public WebSecurityConfig(SuccessUserHandler successUserHandler, AuthProvider authProvider) {
         this.successUserHandler = successUserHandler;
-        this.dataSource = dataSource;
+        this.authProvider = authProvider;
+
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-                .antMatchers("/", "/index", "/registration").permitAll()
+                .antMatchers("/", "/registration").permitAll()
                 .antMatchers("/admin/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
             .and()
-                .formLogin().loginPage("/login").successHandler(successUserHandler).failureForwardUrl("/login?error=true")
+                .formLogin().loginPage("/login").successHandler(successUserHandler).failureUrl("/login?error=true")
                 .permitAll()
             .and()
                 .logout()
@@ -39,11 +37,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication()
-            .dataSource(dataSource)
-            .passwordEncoder(NoOpPasswordEncoder.getInstance())
-            .usersByUsernameQuery("select username, password, enabled from users where username=?")
-            .authoritiesByUsernameQuery("select users.username, user_roles.authorities from users inner join user_roles on users.id = user_roles.user_id where users.username=?");
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(authProvider);
     }
+
 }

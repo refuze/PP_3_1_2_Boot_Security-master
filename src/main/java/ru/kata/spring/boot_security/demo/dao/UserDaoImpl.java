@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.model.User;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
@@ -25,8 +26,21 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> getByUsername(String username) {
-        return entityManager.createQuery("from User where username = :username").setParameter("username", username).getResultList();
+    public User getByUsername(String username) {
+        try {
+            return (User) entityManager.createQuery("from User where username = :username").setParameter("username", username).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public User getByEmail(String email) {
+        try {
+            return (User) entityManager.createQuery("from User where email = :email").setParameter("email", email).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override

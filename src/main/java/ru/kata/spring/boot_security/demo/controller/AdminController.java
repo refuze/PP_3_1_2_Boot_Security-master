@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -9,43 +10,30 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 
 @Controller
 @RequestMapping("/admin")
-//@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
-
-    private UserService userService;
+    private final UserService userService;
 
     public AdminController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/users")
-    public String usersList(ModelMap model) {
+    @GetMapping
+    public String getAdmin(ModelMap model) {
         model.addAttribute("users", userService.getList());
-        return "users";
+        model.addAttribute("newUser", new User());
+        model.addAttribute("roles", Role.values());
+        return "admin";
     }
 
-    @GetMapping("/user-add")
-    public String userAdd(ModelMap model) {
-        model.addAttribute("user", new User());
-        return "user-form";
-    }
-
-    @PostMapping("/user-add")
+    @PostMapping
     public String saveUser(@ModelAttribute User user) {
         userService.update(user);
-        return "redirect:/admin/users";
+        return "redirect:/admin";
     }
 
-    @GetMapping("/user-update/{user}")
-    public String updateUser(ModelMap model, @PathVariable Long user) {
-        model.addAttribute("user", userService.getById(user));
-        model.addAttribute("roles", Role.values());
-        return "user-form";
-    }
-
-    @DeleteMapping("/user-delete/{user}")
-    public String deleteUser(@PathVariable Long user) {
+    @DeleteMapping
+    public String deleteUser(@RequestParam("id") Long user) {
         userService.delete(userService.getById(user));
-        return "redirect:/admin/users";
+        return "redirect:/admin";
     }
 }

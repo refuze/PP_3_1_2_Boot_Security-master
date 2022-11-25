@@ -1,5 +1,7 @@
 package ru.kata.spring.boot_security.demo.service;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.model.User;
@@ -10,7 +12,8 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService{
 
-    private UserDao userDao;
+    private final UserDao userDao;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public UserServiceImpl(UserDao userDao) {
         this.userDao = userDao;
@@ -19,6 +22,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     @Override
     public void add(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.add(user);
     }
 
@@ -28,8 +32,13 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<User> getByUsername(String username) {
+    public User getByUsername(String username) {
         return userDao.getByUsername(username);
+    }
+
+    @Override
+    public User getByEmail(String email) {
+        return userDao.getByEmail(email);
     }
 
     @Override
@@ -40,6 +49,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     @Override
     public void update(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.update(user);
     }
 
@@ -48,4 +58,5 @@ public class UserServiceImpl implements UserService{
     public void delete(User user) {
         userDao.delete(user);
     }
+
 }

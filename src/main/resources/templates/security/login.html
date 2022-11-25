@@ -1,25 +1,46 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
 <head>
-  <title>Spring Security Example</title>
+    <div th:replace="fragments.html::header"></div>
 </head>
+
 <body>
-<h1>User authentication page</h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col"></div>
+        <div class="col-2">
+            <h3 class="fw-bold mt-5 mb-2">Please sign in</h3>
 
-<div th:if="${param.error}">
-  Invalid username and password.
+            <form th:action="@{/login}" method="post">
+                <div>
+                    <input type="text" class="form-control" name="username" placeholder="Username or email"/>
+                </div>
+                <div class="mb-1">
+                    <input type="password" class="form-control" name="password" placeholder="Password"/>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary mb-1">Sign in</button>
+                </div>
+            </form>
+
+            <div class="d-grid gap-2">
+                <a href="/registration" class="btn btn-secondary" role="button">Registration page</a>
+            </div>
+        </div>
+        <div class="col"></div>
+    </div>
 </div>
-<div th:if="${param.logout}">
-  You have been logged out.
-</div>
 
-<form th:action="@{/login}" method="post">
-  <div><label> User Name : <input type="text" name="username"/> </label></div>
-  <div><label> Password: <input type="password" name="password"/> </label></div>
-  <div><input type="submit" value="Sign In"/></div>
-</form>
+<!--    <div th:if="${param.error}">-->
+<!--      Invalid username and password.-->
+<!--    </div>-->
 
-<a href="/registration">Registration page</a>
+<!--    <div th:if="${param.logout}">-->
+<!--      You have been logged out.-->
+<!--    </div>-->
+
+<div th:replace="fragments.html::footer"></div>
 </body>
 </html>
