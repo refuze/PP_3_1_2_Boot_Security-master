@@ -7,11 +7,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Repository
 public class UserDaoImpl implements UserDao {
-
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -22,13 +22,19 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User getById(Long id) {
-        return entityManager.find(User.class, id);
+
+        try {
+            return (User) entityManager.createQuery("from User user left join fetch user.authorities where user.id = :id").setParameter("id", id).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override
     public User getByUsername(String username) {
+
         try {
-            return (User) entityManager.createQuery("from User where username = :username").setParameter("username", username).getSingleResult();
+            return (User) entityManager.createQuery("from User user left join fetch user.authorities where user.username = :username").setParameter("username", username).getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
@@ -37,7 +43,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User getByEmail(String email) {
         try {
-            return (User) entityManager.createQuery("from User where email = :email").setParameter("email", email).getSingleResult();
+            return (User) entityManager.createQuery("from User user left join fetch user.authorities where user.email = :email").setParameter("email", email).getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
@@ -45,7 +51,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> getList() {
-        return entityManager.createQuery("from User").getResultList();
+        return (List<User>) entityManager.createQuery("from User user left join fetch user.authorities").getResultList().stream().distinct().collect(Collectors.toList());
     }
 
     @Override
