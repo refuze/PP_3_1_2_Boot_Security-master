@@ -1,43 +1,50 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
-@Controller
-@RequestMapping("/admin")
-public class AdminController {
+import java.util.List;
+
+@RestController
+@RequestMapping("admin/rest")
+public class AdminRestController {
     private final UserService userService;
 
-    public AdminController(UserService userService) {
+    public AdminRestController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping
-    public String getAdmin(ModelMap model) {
-        model.addAttribute("users", userService.getList());
-        model.addAttribute("newUser", new User());
-        model.addAttribute("roles", Role.values());
-        return "admin";
+    public List<User> getAdmin() {
+        return userService.getList();
+    }
+
+    @GetMapping("roles")
+    public Role[] getRoles() {
+        return Role.values();
     }
 
     @PostMapping
-    public String saveUser(@ModelAttribute User user) {
+    public void postAdmin(@ModelAttribute User user) {
+        userService.add(user);
+    }
+
+    @PutMapping
+    public void putAdmin(@ModelAttribute User user) {
         userService.update(user);
-        return "redirect:/admin";
     }
 
     @DeleteMapping
-    public String deleteUser(@RequestParam("id") Long user) {
-        userService.delete(userService.getById(user));
-        return "redirect:/admin";
+    public void deleteAdmin(@RequestParam Long id) {
+        userService.delete(userService.getById(id));
     }
 }
