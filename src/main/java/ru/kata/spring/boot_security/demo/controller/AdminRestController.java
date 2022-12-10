@@ -15,7 +15,7 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("admin/rest")
+@RequestMapping("api/admin")
 public class AdminRestController {
     private final UserService userService;
 
@@ -26,6 +26,11 @@ public class AdminRestController {
     @GetMapping
     public List<User> getAdmin() {
         return userService.getList();
+    }
+
+    @GetMapping("user")
+    public User getUser(@RequestParam("id") Long id) {
+        return userService.getById(id);
     }
 
     @GetMapping("roles")

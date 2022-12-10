@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="en">
+
+  <head>
+    <div th:replace="fragments.html::header"></div>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col"></div>
+
+        <div class="col-2">
+          <h3 class="fw-bold mt-5 mb-2">Please sign up</h3>
+
+          <form id="registration-form">
+            <div><input type="text" class="form-control" name="username" placeholder="Username" id="username-reg"/></div>
+            <div><input type="email" class="form-control" name="email" placeholder="Email" id="email-reg"/></div>
+            <div class="mb-1"><input type="password" class="form-control" name="password" placeholder="Password"/></div>
+            <div class="d-grid gap-2"><button type="submit" class="btn btn-primary mb-1" onclick="registration()">Sign up</button></div>
+          </form>
+
+        </div>
+
+        <div class="col"></div>
+      </div>
+    </div>
+
+    <script src="registration.js"></script>
+
+    <div th:replace="fragments.html::footer"></div>
+  </body>
+</html>
