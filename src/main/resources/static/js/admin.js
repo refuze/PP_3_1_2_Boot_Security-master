@@ -1,7 +1,7 @@
 getAllUsers();
 
 function getAllUsers() {
-    fetch("http://localhost:8080/api/users")
+    fetch("http://localhost:8080/admin/api")
         .then(res => res.json())
         .then(users => {
             let temp = '';
@@ -33,7 +33,7 @@ function getAllUsers() {
 }
 
 function openEditModal(id) {
-    fetch("http://localhost:8080/api/admin/user?id=" + id, {
+    fetch("http://localhost:8080/admin/api/user?id=" + id, {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json;charset=UTF-8'
@@ -48,7 +48,7 @@ function openEditModal(id) {
 }
 
 function openDeleteModal(id) {
-    fetch("http://localhost:8080/api/admin/user?=" + id, {
+    fetch("http://localhost:8080/admin/api/user?id=" + id, {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json;charset=UTF-8'
@@ -71,7 +71,8 @@ function refreshTable() {
 }
 
 async function deleteUser() {
-    await fetch("http://localhost:8080/api/admin?id=" + document.getElementById("id-delete").value, {
+    await fetch("http://localhost:8080/admin/api?id=" + document.getElementById("id-delete").value, {
+        credentials: 'include',
         method: 'DELETE',
         headers: {
             'Accept': 'application/json',
@@ -85,7 +86,7 @@ async function deleteUser() {
 }
 
 function newUser() {
-    fetch("http://localhost:8080/api/newUser", {
+    fetch("http://localhost:8080/admin/api", {
         method: "POST",
         headers: {
             'Accept': 'application/json',
@@ -118,7 +119,7 @@ function getRoles(list) {
 }
 
 async function editUser() {
-    await fetch('http://localhost:8080/api/admin', {
+    await fetch('http://localhost:8080/admin/api', {
         method: "PUT",
         headers: {
             'Accept': 'application/json',

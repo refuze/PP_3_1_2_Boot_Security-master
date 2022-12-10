@@ -15,7 +15,7 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/admin")
+@RequestMapping("admin/api")
 public class AdminRestController {
     private final UserService userService;
 
@@ -49,7 +49,7 @@ public class AdminRestController {
     }
 
     @DeleteMapping
-    public void deleteAdmin(@RequestParam Long id) {
+    public void deleteAdmin(@RequestParam("id") Long id) {
         userService.delete(userService.getById(id));
     }
 }
