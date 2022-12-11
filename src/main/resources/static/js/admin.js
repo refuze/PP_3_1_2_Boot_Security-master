@@ -1,7 +1,12 @@
-getAllUsers();
+document.addEventListener('DOMContentLoaded', getAllUsers);
 
-function getAllUsers() {
-    fetch("http://localhost:8080/admin/api")
+document.addEventListener('DOMContentLoaded', async () => {
+    await fetch("http://localhost:8080/admin/api/roles")
+        .then(res => console.log(res.json()))
+})
+
+async function getAllUsers() {
+    await fetch("http://localhost:8080/admin/api")
         .then(res => res.json())
         .then(users => {
             let temp = '';
@@ -12,7 +17,7 @@ function getAllUsers() {
                 <td id="id${user.id}">${user.id}</td>
                 <td id="username${user.id}">${user.username}</td> 
                 <td id="email${user.id}">${user.email}</td>
-                <td id="roles${user.id}">${user.authorities.map(r => r.name)}</td>
+                <td id="roles${user.id}">${user.authorities}</td>
                 
                 <td>
                 <button type="button" class="btn btn-info" 
@@ -39,35 +44,49 @@ function openEditModal(id) {
             'Content-Type': 'application/json;charset=UTF-8'
         }
     }).then(res => {
-        res.json().then(u => {
-            document.getElementById('id-edit').value = u.id;
-            document.getElementById('username-edit').value = u.username;
-            document.getElementById('email-edit').value = u.email;
+        res.json().then(user => {
+            for (let option of document.getElementById('role-edit').options)
+            {
+                if (user.authorities.includes(option.value)) {
+                    option.selected = 'selected';
+                }
+            }
+
+            document.getElementById('id-edit').value = user.id;
+            document.getElementById('username-edit').value = user.username;
+            document.getElementById('email-edit').value = user.email;
         })
     });
 }
 
-function openDeleteModal(id) {
-    fetch("http://localhost:8080/admin/api/user?id=" + id, {
+async function openDeleteModal(id) {
+    await fetch("http://localhost:8080/admin/api/user?id=" + id, {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json;charset=UTF-8'
         }
     }).then(res => {
-        res.json().then(u => {
-            document.getElementById('id-delete').value = u.id;
-            document.getElementById('username-delete').value = u.username;
-            document.getElementById('email-delete').value = u.email;
+        res.json().then(user => {
+            for (let option of document.getElementById('role-delete').options)
+            {
+                if (user.authorities.includes(option.value)) {
+                    option.selected = 'selected';
+                }
+            }
+
+            document.getElementById('id-delete').value = user.id;
+            document.getElementById('username-delete').value = user.username;
+            document.getElementById('email-delete').value = user.email;
         })
     });
 }
 
-function refreshTable() {
+async function refreshTable() {
     let table = document.getElementById('table-body')
     while (table.rows.length > 1) {
         table.deleteRow(1)
     }
-    getAllUsers();
+    await getAllUsers();
 }
 
 document.getElementById('delete-submit-button')
@@ -75,7 +94,6 @@ document.getElementById('delete-submit-button')
         event.preventDefault();
 
         await fetch("http://localhost:8080/admin/api?id=" + document.getElementById("id-delete").value, {
-            credentials: 'include',
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -93,7 +111,16 @@ document.getElementById('new-submit-button')
     .addEventListener('click',async (event) => {
         event.preventDefault();
 
-        fetch("http://localhost:8080/admin/api", {
+        let roles = [];
+
+        for (let option of document.getElementById('role-new').options)
+        {
+            if (option.selected) {
+                roles.push(option.value);
+            }
+        }
+
+        await fetch("http://localhost:8080/admin/api", {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
@@ -103,31 +130,27 @@ document.getElementById('new-submit-button')
                 username: document.getElementById('username-new').value,
                 email: document.getElementById('email-new').value,
                 password: document.getElementById('password-new').value,
-                authorities: getRoles(Array.from(document.getElementById('role-new').selectedOptions)
-                    .map(r => r.value))
+                authorities: roles
             })
-        }).then(r => console.log(r))
-            .then(() => {
-                document.getElementById("nav-users-tab").click();
-                refreshTable();
-                document.getElementById("new-form").reset();
-            })
+        }).then(() => {
+            document.getElementById("nav-users-tab").click();
+            refreshTable();
+            document.getElementById("new-form").reset();
+        })
     })
-
-function getRoles(list) {
-    let roles = [];
-    if (list.indexOf("ADMIN") >= 0) {
-        roles.push({"id": 1});
-    }
-    if (list.indexOf("USER") >= 0) {
-        roles.push({"id": 2});
-    }
-    return roles;
-}
 
 document.getElementById('edit-submit-button')
     .addEventListener('click', async (event) => {
         event.preventDefault();
+
+        let roles = [];
+
+        for (let option of document.getElementById('role-edit').options)
+        {
+            if (option.selected) {
+                roles.push(option.value);
+            }
+        }
 
         await fetch('http://localhost:8080/admin/api', {
             method: "PUT",
@@ -136,13 +159,22 @@ document.getElementById('edit-submit-button')
                 'Content-Type': 'application/json;charset=UTF-8'
             },
             body: JSON.stringify({
-                username: document.getElementById('username-new').value,
-                email: document.getElementById('email-new').value,
-                password: document.getElementById('password-new').value,
-                authorities: getRoles(Array.from(document.getElementById('role-new').selectedOptions)
-                    .map(r => r.value))
+                id: document.getElementById('id-edit').value,
+                username: document.getElementById('username-edit').value,
+                email: document.getElementById('email-edit').value,
+                password: document.getElementById('password-edit').value,
+                authorities: roles
             })
         }).then(r => console.log(r))
+            .then(() => {
+                console.log(JSON.stringify({
+                    id: document.getElementById('id-edit').value,
+                    username: document.getElementById('username-edit').value,
+                    email: document.getElementById('email-edit').value,
+                    password: document.getElementById('password-edit').value,
+                    authorities: roles
+                }))
+            })
             .then(() => {
                 document.getElementById("edit-close").click();
                 refreshTable()

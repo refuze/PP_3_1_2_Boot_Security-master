@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,12 +40,12 @@ public class AdminRestController {
     }
 
     @PostMapping
-    public void postAdmin(@ModelAttribute User user) {
+    public void postAdmin(@RequestBody User user) {
         userService.add(user);
     }
 
     @PutMapping
-    public void putAdmin(@ModelAttribute User user) {
+    public void putAdmin(@RequestBody User user) {
         userService.update(user);
     }
 

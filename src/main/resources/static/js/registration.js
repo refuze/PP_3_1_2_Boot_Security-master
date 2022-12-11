@@ -11,20 +11,12 @@ function registration() {
             'Accept': 'application/json',
             'Content-Type': 'application/json;charset=UTF-8'
         },
-        body: {
+        body: JSON.stringify({
             username: document.getElementById('username-reg').value,
             email: document.getElementById('email-reg').value,
             password: document.getElementById('password-reg').value
-        }
-    }).then(r => console.log(r))
-        .then(() => {
-            console.log({
-                username: document.getElementById('username-reg').value,
-                email: document.getElementById('email-reg').value,
-                password: document.getElementById('password-reg').value
-            })
         })
-        // .then(() => {
-        //     window.location.href = "http://localhost:8080/login";
-        // })
+    }).then((res) => {
+        res.status===200 ? window.location.href = "http://localhost:8080/login" : null;
+    })
 }

@@ -57,7 +57,12 @@ public class UserServiceImpl implements UserService{
     @Override
     public void update(User user) {
         if (getById(user.getId()) != null) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            if (user.getPassword().equals("")) {
+                user.setPassword(getById(user.getId()).getPassword());
+            } else {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+
             userDao.update(user);
         } else {
             throw new UserNotExistException("User not found");
