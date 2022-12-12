@@ -30,7 +30,6 @@ public class UserServiceImpl implements UserService{
         } else {
             throw new UserAlreadyExistException("User already exist");
         }
-
     }
 
     @Override

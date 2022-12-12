@@ -14,7 +14,8 @@ function registration() {
         body: JSON.stringify({
             username: document.getElementById('username-reg').value,
             email: document.getElementById('email-reg').value,
-            password: document.getElementById('password-reg').value
+            password: document.getElementById('password-reg').value,
+            authorities: ['USER']
         })
     }).then((res) => {
         res.status===200 ? window.location.href = "http://localhost:8080/login" : null;
